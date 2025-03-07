@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 set -e
-if [[ ! -d "/Users/matt/Documents/Education/SFSU/School/645/tcp" ]]; then
+if [[ ! -d "/Users/matt/Documents/Education/SFSU/School/645/NetworkingFun" ]]; then
   echo "Cannot find source directory; Did you move it?"
-  echo "(Looking for "/Users/matt/Documents/Education/SFSU/School/645/tcp")"
+  echo "(Looking for "/Users/matt/Documents/Education/SFSU/School/645/NetworkingFun")"
   echo 'Cannot force reload with this script - use "direnv reload" manually and then try again'
   exit 1
 fi
 
 # rebuild the cache forcefully
-_nix_direnv_force_reload=1 direnv exec "/Users/matt/Documents/Education/SFSU/School/645/tcp" true
+_nix_direnv_force_reload=1 direnv exec "/Users/matt/Documents/Education/SFSU/School/645/NetworkingFun" true
 
 # Update the mtime for .envrc.
 # This will cause direnv to reload again - but without re-building.
-touch "/Users/matt/Documents/Education/SFSU/School/645/tcp/.envrc"
+touch "/Users/matt/Documents/Education/SFSU/School/645/NetworkingFun/.envrc"
 
 # Also update the timestamp of whatever profile_rc we have.
 # This makes sure that we know we are up to date.
-touch -r "/Users/matt/Documents/Education/SFSU/School/645/tcp/.envrc" "/Users/matt/Documents/Education/SFSU/School/645/tcp/.direnv"/*.rc
+touch -r "/Users/matt/Documents/Education/SFSU/School/645/NetworkingFun/.envrc" "/Users/matt/Documents/Education/SFSU/School/645/NetworkingFun/.direnv"/*.rc
