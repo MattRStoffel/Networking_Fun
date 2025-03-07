@@ -12,14 +12,14 @@ func Run() {
 
 	udpAddr, err := net.ResolveUDPAddr("udp", os.Getenv("ADDRESS")+":"+os.Getenv("PORT"))
 	if err != nil {
-		fmt.Println("unable to resolve address")
+		fmt.Println(err)
 		os.Exit(1)
 	}
 
 	// Open socket
 	conection, err := net.DialUDP("udp", nil, udpAddr)
 	if err != nil {
-		fmt.Println("Socket open fail")
+		fmt.Println(err)
 		os.Exit(1)
 	}
 
