@@ -4,12 +4,14 @@ import (
 	"fmt"
 	"net"
 	"os"
+	"slices"
+	"strings"
 )
 
-func reverseBytes(b []byte) {
-	for i, j := 0, len(b)-1; i < j; i, j = i+1, j-1 {
-		b[i], b[j] = b[j], b[i]
-	}
+func reverseWords(buf []byte) []byte {
+	tmp := strings.Split(string(buf), " ")
+	slices.Reverse(tmp)
+	return []byte(strings.Join(tmp, " "))
 }
 
 func Run() {
@@ -28,7 +30,8 @@ func Run() {
 	fmt.Println("Server running....")
 	for {
 		_, clientAddr, _ := socket.ReadFromUDP(message)
-		reverseBytes(message)
-		socket.WriteToUDP(message, clientAddr)
+		words := reverseWords(message)
+		fmt.Println(string(words))
+		socket.WriteToUDP(words, clientAddr)
 	}
 }

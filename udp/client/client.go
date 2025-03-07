@@ -1,19 +1,23 @@
 package udpclient
 
 import (
+	"bufio"
 	"fmt"
 	"net"
 	"os"
+	"strings"
 )
 
 func Run() {
 	// Get input from user
 	fmt.Println("input a lowwercase sentence: ")
-	var input string
-	if _, err := fmt.Scanln(&input); err != nil {
-		fmt.Println("Bad input")
+	reader := bufio.NewReader(os.Stdin)
+	input, err := reader.ReadString('\n')
+	if err != nil {
+		fmt.Println(err)
 		os.Exit(1)
 	}
+	input = strings.Split(input, "\n")[0]
 
 	address := "localhost:4201"
 	udpAddr, err := net.ResolveUDPAddr("udp", address)
@@ -34,12 +38,12 @@ func Run() {
 		os.Exit(1)
 	}
 
-	message := make([]byte, 1024)
-	n, _, err := conection.ReadFromUDP(message)
+	buffer := make([]byte, 1024)
+	_, _, err = conection.ReadFromUDP(buffer)
 	if err != nil {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	fmt.Println(string(message[:n]))
+	fmt.Print(string(buffer))
 
 }
