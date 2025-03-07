@@ -1,21 +1,14 @@
 package udpserver
 
 import (
+	"NetworkingFun/internal"
 	"fmt"
 	"net"
 	"os"
-	"slices"
-	"strings"
 )
 
-func reverseWords(buf []byte) []byte {
-	tmp := strings.Split(string(buf), " ")
-	slices.Reverse(tmp)
-	return []byte(strings.Join(tmp, " "))
-}
-
 func Run() {
-	udpAddr, err := net.ResolveUDPAddr("udp", ":4201")
+	udpAddr, err := net.ResolveUDPAddr("udp", ":"+os.Getenv("PORT"))
 	if err != nil {
 		fmt.Println("unable to resolve address")
 		os.Exit(1)
@@ -26,12 +19,10 @@ func Run() {
 		os.Exit(1)
 	}
 
-	message := make([]byte, 1024)
+	buffer := make([]byte, 1024)
 	fmt.Println("Server running....")
 	for {
-		_, clientAddr, _ := socket.ReadFromUDP(message)
-		words := reverseWords(message)
-		fmt.Println(string(words))
-		socket.WriteToUDP(words, clientAddr)
+		_, clientAddr, _ := socket.ReadFromUDP(buffer)
+		socket.WriteToUDP(internal.ReverseWords(buffer), clientAddr)
 	}
 }

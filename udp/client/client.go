@@ -1,26 +1,16 @@
 package udpclient
 
 import (
-	"bufio"
+	"NetworkingFun/internal"
 	"fmt"
 	"net"
 	"os"
-	"strings"
 )
 
 func Run() {
-	// Get input from user
-	fmt.Println("input a lowwercase sentence: ")
-	reader := bufio.NewReader(os.Stdin)
-	input, err := reader.ReadString('\n')
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	input = strings.Split(input, "\n")[0]
+	input := internal.GetInput()
 
-	address := "localhost:4201"
-	udpAddr, err := net.ResolveUDPAddr("udp", address)
+	udpAddr, err := net.ResolveUDPAddr("udp", os.Getenv("ADDRESS")+":"+os.Getenv("PORT"))
 	if err != nil {
 		fmt.Println("unable to resolve address")
 		os.Exit(1)
@@ -44,6 +34,5 @@ func Run() {
 		fmt.Println(err)
 		os.Exit(1)
 	}
-	fmt.Print(string(buffer))
-
+	fmt.Println(string(buffer))
 }

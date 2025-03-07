@@ -6,10 +6,16 @@ import (
 	"NetworkingFun/udp/client"
 	"NetworkingFun/udp/server"
 	"fmt"
+	"github.com/joho/godotenv"
 	"log"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	var protocol string
 	fmt.Println("select protocol ([U]dp, [t]cp): ")
 	fmt.Scanln(&protocol)
