@@ -24,7 +24,7 @@ func Run() {
 	}
 
 	if _, err := conection.Write([]byte(input)); err != nil {
-		fmt.Println("unable to write to connection")
+		fmt.Println(err)
 		os.Exit(1)
 	}
 

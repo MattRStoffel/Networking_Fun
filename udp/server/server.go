@@ -10,12 +10,12 @@ import (
 func Run() {
 	udpAddr, err := net.ResolveUDPAddr("udp", ":"+os.Getenv("PORT"))
 	if err != nil {
-		fmt.Println("unable to resolve address")
+		fmt.Println(err)
 		os.Exit(1)
 	}
 	socket, err := net.ListenUDP("udp", udpAddr)
 	if err != nil {
-		fmt.Println("Cant hear you")
+		fmt.Println(err)
 		os.Exit(1)
 	}
 
@@ -23,6 +23,9 @@ func Run() {
 	fmt.Println("Server running....")
 	for {
 		_, clientAddr, _ := socket.ReadFromUDP(buffer)
-		socket.WriteToUDP(internal.ReverseWords(buffer), clientAddr)
+		if _, err := socket.WriteToUDP(internal.ReverseWords(buffer), clientAddr); err != nil {
+			fmt.Println(err)
+			continue
+		}
 	}
 }
