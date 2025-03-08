@@ -4,35 +4,32 @@ import (
 	"NetworkingFun/internal"
 	"fmt"
 	"net"
-	"os"
 )
 
-func Run() {
+func Run(addr string, port string) error {
 	input := internal.GetInput()
 
-	udpAddr, err := net.ResolveUDPAddr("udp", os.Getenv("ADDRESS")+":"+os.Getenv("PORT"))
+	udpAddr, err := net.ResolveUDPAddr("udp", addr+":"+port)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return fmt.Errorf("failed to resolve UDP address: %w", err)
 	}
 
-	// Open socket
-	conection, err := net.DialUDP("udp", nil, udpAddr)
+	connection, err := net.DialUDP("udp", nil, udpAddr)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return fmt.Errorf("failed to dial UDP: %w", err)
+	}
+	defer connection.Close()
+
+	if _, err := connection.Write([]byte(input)); err != nil {
+		return fmt.Errorf("failed to write to UDP connection: %w", err)
 	}
 
-	if _, err := conection.Write([]byte(input)); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+	buffer := make([]byte, internal.BufferSize)
+	n, _, err := connection.ReadFromUDP(buffer)
+	if err != nil {
+		return fmt.Errorf("failed to read from UDP connection: %w", err)
 	}
 
-	buffer := make([]byte, 1024)
-	_, _, err = conection.ReadFromUDP(buffer)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	fmt.Println(string(buffer))
+	fmt.Println(string(buffer[:n]))
+	return nil
 }

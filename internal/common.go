@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+const BufferSize = 1024
+
 func ReverseWords(buf []byte) []byte {
 	tmp := strings.Split(string(buf), " ")
 	slices.Reverse(tmp)

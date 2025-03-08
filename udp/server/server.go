@@ -4,27 +4,34 @@ import (
 	"NetworkingFun/internal"
 	"fmt"
 	"net"
-	"os"
 )
 
-func Run() {
-	udpAddr, err := net.ResolveUDPAddr("udp", ":"+os.Getenv("PORT"))
+func Run(port string) error {
+	udpAddr, err := net.ResolveUDPAddr("udp", ":"+port)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-	socket, err := net.ListenUDP("udp", udpAddr)
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return fmt.Errorf("failed to resolve UDP address: %w", err)
 	}
 
-	buffer := make([]byte, 1024)
-	fmt.Println("Server running....")
+	socket, err := net.ListenUDP("udp", udpAddr)
+	if err != nil {
+		return fmt.Errorf("failed to listen on UDP address: %w", err)
+	}
+	defer socket.Close()
+
+	buffer := make([]byte, internal.BufferSize)
+	fmt.Println("Server running...")
+
 	for {
-		_, clientAddr, _ := socket.ReadFromUDP(buffer)
-		if _, err := socket.WriteToUDP(internal.ReverseWords(buffer), clientAddr); err != nil {
-			fmt.Println(err)
+		n, clientAddr, err := socket.ReadFromUDP(buffer)
+		if err != nil {
+			fmt.Printf("failed to read from UDP: %v\n", err)
+			continue
+		}
+
+		response := internal.ReverseWords(buffer[:n])
+		fmt.Println(string(response))
+		if _, err := socket.WriteToUDP(response, clientAddr); err != nil {
+			fmt.Printf("failed to write to UDP: %v\n", err)
 			continue
 		}
 	}

@@ -6,8 +6,10 @@ import (
 	"NetworkingFun/udp/client"
 	"NetworkingFun/udp/server"
 	"fmt"
-	"github.com/joho/godotenv"
 	"log"
+	"os"
+
+	"github.com/joho/godotenv"
 )
 
 func main() {
@@ -15,6 +17,8 @@ func main() {
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+	addr := os.Getenv("ADDRESS")
+	port := os.Getenv("PORT")
 
 	var protocol string
 	fmt.Println("select protocol ([U]dp, [t]cp): ")
@@ -29,10 +33,14 @@ func main() {
 		switch mode {
 		case "Client", "C", "client", "c", "":
 			log.Println("Starting client...")
-			tcpclient.Run()
+			if err := tcpclient.Run(addr, port); err != nil {
+				fmt.Println(err)
+			}
 		case "server", "s", "S", "Server":
 			log.Println("Starting server...")
-			tcpserver.Run()
+			if err := tcpserver.Run(port); err != nil {
+				fmt.Println(err)
+			}
 		default:
 			fmt.Println("Invalid seletion")
 		}
@@ -40,10 +48,14 @@ func main() {
 		switch mode {
 		case "Client", "C", "client", "c":
 			log.Println("Starting client...")
-			udpclient.Run()
+			if err := udpclient.Run(addr, port); err != nil {
+				fmt.Println(err)
+			}
 		case "server", "s", "S", "Server", "":
 			log.Println("Starting server...")
-			udpserver.Run()
+			if err := udpserver.Run(port); err != nil {
+				fmt.Println(err)
+			}
 		default:
 			fmt.Println("Invalid seletion")
 		}

@@ -4,37 +4,33 @@ import (
 	"NetworkingFun/internal"
 	"fmt"
 	"net"
-	"os"
 )
 
-func Run() {
+func Run(addr string, port string) error {
 	input := internal.GetInput()
 
-	radder, err := net.ResolveTCPAddr("tcp", os.Getenv("ADDRESS")+":"+os.Getenv("PORT"))
+	radder, err := net.ResolveTCPAddr("tcp", addr+":"+port)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return fmt.Errorf("failed to resolve TCP address: %w", err)
 	}
 
-	// Open socket
 	socket, err := net.DialTCP("tcp", nil, radder)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return fmt.Errorf("failed to dial TCP: %w", err)
 	}
+	defer socket.Close()
 
 	if _, err := socket.Write([]byte(input)); err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return fmt.Errorf("failed to write to socket: %w", err)
 	}
 
-	buffer := make([]byte, 1024)
+	buffer := make([]byte, internal.BufferSize)
 
 	n, err := socket.Read(buffer)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return fmt.Errorf("failed to read from socket: %w", err)
 	}
 
 	fmt.Println(string(buffer[:n]))
+	return nil
 }

@@ -4,41 +4,47 @@ import (
 	"NetworkingFun/internal"
 	"fmt"
 	"net"
-	"os"
 )
 
-func Run() {
-	raddr, err := net.ResolveTCPAddr("tcp", ":"+os.Getenv("PORT"))
+func Run(port string) error {
+	raddr, err := net.ResolveTCPAddr("tcp", ":"+port)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return fmt.Errorf("failed to resolve TCP address: %w", err)
 	}
 
-	socket, err := net.ListenTCP("tcp", raddr)
+	listener, err := net.ListenTCP("tcp", raddr)
 	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
+		return fmt.Errorf("failed to listen on TCP address: %w", err)
 	}
+	defer listener.Close()
 
-	buffer := make([]byte, 1024)
 	fmt.Println("Server running...")
+
+	buffer := make([]byte, internal.BufferSize)
 	for {
-		caddr, err := socket.Accept()
+		conn, err := listener.Accept()
 		if err != nil {
-			fmt.Println(err)
+			fmt.Printf("failed to accept connection: %v\n", err)
 			continue
 		}
-		if _, err := caddr.Read(buffer); err != nil {
-			fmt.Println(err)
-			continue
-		}
-		if _, err := caddr.Write(internal.ReverseWords(buffer)); err != nil {
-			fmt.Println(err)
-			continue
-		}
-		if err := caddr.Close(); err != nil {
-			fmt.Println(err)
-			continue
-		}
+
+		go handleConnection(conn, buffer)
 	}
 }
+
+func handleConnection(conn net.Conn, buffer []byte) {
+	defer conn.Close()
+
+	n, err := conn.Read(buffer)
+	if err != nil {
+		fmt.Printf("failed to read from connection: %v\n", err)
+		return
+	}
+
+	response := internal.ReverseWords(buffer[:n])
+	if _, err := conn.Write(response); err != nil {
+		fmt.Printf("failed to write to connection: %v\n", err)
+		return
+	}
+}
+
