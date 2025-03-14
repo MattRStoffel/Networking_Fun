@@ -18,7 +18,7 @@ func Run(port string) error {
 	}
 	defer socket.Close()
 
-	buffer := make([]byte, internal.BufferSize)
+	buffer := make([]byte, common.BufferSize)
 	fmt.Println("Server running...")
 
 	for {
@@ -28,7 +28,7 @@ func Run(port string) error {
 			continue
 		}
 
-		response := internal.ReverseWords(buffer[:n])
+		response := common.ReverseWords(buffer[:n])
 		fmt.Println(string(response))
 		if _, err := socket.WriteToUDP(response, clientAddr); err != nil {
 			fmt.Printf("failed to write to UDP: %v\n", err)

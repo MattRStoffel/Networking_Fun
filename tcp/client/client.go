@@ -7,7 +7,7 @@ import (
 )
 
 func Run(addr string, port string) error {
-	input := internal.GetInput()
+	input := common.GetInput()
 
 	radder, err := net.ResolveTCPAddr("tcp", addr+":"+port)
 	if err != nil {
@@ -24,7 +24,7 @@ func Run(addr string, port string) error {
 		return fmt.Errorf("failed to write to socket: %w", err)
 	}
 
-	buffer := make([]byte, internal.BufferSize)
+	buffer := make([]byte, common.BufferSize)
 
 	n, err := socket.Read(buffer)
 	if err != nil {

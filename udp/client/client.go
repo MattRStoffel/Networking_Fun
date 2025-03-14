@@ -7,7 +7,7 @@ import (
 )
 
 func Run(addr string, port string) error {
-	input := internal.GetInput()
+	input := common.GetInput()
 
 	udpAddr, err := net.ResolveUDPAddr("udp", addr+":"+port)
 	if err != nil {
@@ -24,7 +24,7 @@ func Run(addr string, port string) error {
 		return fmt.Errorf("failed to write to UDP connection: %w", err)
 	}
 
-	buffer := make([]byte, internal.BufferSize)
+	buffer := make([]byte, common.BufferSize)
 	n, _, err := connection.ReadFromUDP(buffer)
 	if err != nil {
 		return fmt.Errorf("failed to read from UDP connection: %w", err)

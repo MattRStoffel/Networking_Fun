@@ -20,7 +20,7 @@ func Run(port string) error {
 
 	fmt.Println("Server running...")
 
-	buffer := make([]byte, internal.BufferSize)
+	buffer := make([]byte, common.BufferSize)
 	for {
 		conn, err := listener.Accept()
 		if err != nil {
@@ -41,10 +41,9 @@ func handleConnection(conn net.Conn, buffer []byte) {
 		return
 	}
 
-	response := internal.ReverseWords(buffer[:n])
+	response := common.ReverseWords(buffer[:n])
 	if _, err := conn.Write(response); err != nil {
 		fmt.Printf("failed to write to connection: %v\n", err)
 		return
 	}
 }
-
